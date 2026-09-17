@@ -23,29 +23,15 @@ resource "ibm_is_security_group_rule" "this" {
   direction = each.value.direction
   remote    = each.value.remote
 
-  dynamic "tcp" {
-    for_each = each.value.protocol == "tcp" ? [each.value] : []
-    content {
-      port_min = tcp.value.port_min
-      port_max = tcp.value.port_max
-    }
-  }
+  # Use top-level protocol/port/icmp attributes (nested tcp/udp/icmp blocks
+  # are deprecated in the IBM Cloud provider and will be removed).
+  protocol = each.value.protocol == "all" ? null : each.value.protocol
 
-  dynamic "udp" {
-    for_each = each.value.protocol == "udp" ? [each.value] : []
-    content {
-      port_min = udp.value.port_min
-      port_max = udp.value.port_max
-    }
-  }
+  port_min = contains(["tcp", "udp"], each.value.protocol) ? each.value.port_min : null
+  port_max = contains(["tcp", "udp"], each.value.protocol) ? each.value.port_max : null
 
-  dynamic "icmp" {
-    for_each = each.value.protocol == "icmp" ? [each.value] : []
-    content {
-      type = icmp.value.icmp_type
-      code = icmp.value.icmp_code
-    }
-  }
+  type = each.value.protocol == "icmp" ? each.value.icmp_type : null
+  code = each.value.protocol == "icmp" ? each.value.icmp_code : null
 }
 
 # ── LOOKUP ────────────────────────────────────────────────────────────────────

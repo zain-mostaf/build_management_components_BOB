@@ -66,8 +66,11 @@ resource "ibm_is_instance" "this" {
     }
   }
 
-  # VNI-based network attachment — used when use_vni = true
-  dynamic "network_attachments" {
+  # VNI-based primary attachment — used when use_vni = true.
+  # The IBM Cloud provider requires primary_network_attachment (not
+  # network_attachments) to satisfy the
+  # primary_network_attachment|primary_network_interface constraint.
+  dynamic "primary_network_attachment" {
     for_each = var.use_vni ? [1] : []
     content {
       name = "${local.hostnames[count.index]}-nic"
