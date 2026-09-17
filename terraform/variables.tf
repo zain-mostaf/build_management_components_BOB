@@ -63,9 +63,14 @@ variable "create_address_prefix" {
 }
 
 variable "address_prefix_name" {
-  description = "Name of the address prefix to create or use."
+  description = "Name of the address prefix to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
   default     = "prefix-01"
+
+  validation {
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.address_prefix_name))
+    error_message = "address_prefix_name must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
+  }
 }
 
 variable "address_prefix_cidr" {
@@ -82,12 +87,12 @@ variable "create_subnet" {
 }
 
 variable "subnet_name" {
-  description = "Name of the subnet to create or use."
+  description = "Name of the subnet to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
 
   validation {
-    condition     = length(trimspace(var.subnet_name)) > 0
-    error_message = "subnet_name must not be empty."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.subnet_name))
+    error_message = "subnet_name must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
   }
 }
 
@@ -111,12 +116,12 @@ variable "create_security_group" {
 }
 
 variable "security_group_name" {
-  description = "Name of the Security Group to create or use."
+  description = "Name of the Security Group to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
 
   validation {
-    condition     = length(trimspace(var.security_group_name)) > 0
-    error_message = "security_group_name must not be empty."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.security_group_name))
+    error_message = "security_group_name must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
   }
 }
 
@@ -227,13 +232,13 @@ variable "number_of_jump_servers" {
 }
 
 variable "linux_hostname_prefix" {
-  description = "Hostname prefix for Linux VSIs (e.g. 'jump' → jump01, jump02)."
+  description = "Hostname prefix for Linux VSIs (e.g. 'jump' → jump01, jump02). Must contain only lowercase letters and digits; no hyphens or underscores, as a numeric suffix is appended."
   type        = string
   default     = "jump"
 
   validation {
-    condition     = length(trimspace(var.linux_hostname_prefix)) > 0
-    error_message = "linux_hostname_prefix must not be empty."
+    condition     = can(regex("^[a-z][a-z0-9]*$", var.linux_hostname_prefix))
+    error_message = "linux_hostname_prefix must start with a lowercase letter and contain only lowercase letters and digits. Hyphens and underscores are not allowed (a numeric suffix is appended automatically)."
   }
 }
 
@@ -276,13 +281,13 @@ variable "number_of_windows_servers" {
 }
 
 variable "windows_hostname_prefix" {
-  description = "Hostname prefix for Windows VSIs (e.g. 'win' → win01, win02)."
+  description = "Hostname prefix for Windows VSIs (e.g. 'win' → win01, win02). Must contain only lowercase letters and digits; no hyphens or underscores, as a numeric suffix is appended."
   type        = string
   default     = "win"
 
   validation {
-    condition     = length(trimspace(var.windows_hostname_prefix)) > 0
-    error_message = "windows_hostname_prefix must not be empty."
+    condition     = can(regex("^[a-z][a-z0-9]*$", var.windows_hostname_prefix))
+    error_message = "windows_hostname_prefix must start with a lowercase letter and contain only lowercase letters and digits. Hyphens and underscores are not allowed (a numeric suffix is appended automatically)."
   }
 }
 

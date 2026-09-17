@@ -9,12 +9,12 @@ variable "create_security_group" {
 }
 
 variable "security_group_name" {
-  description = "Name of the Security Group to create or look up."
+  description = "Name of the Security Group to create or look up. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
 
   validation {
-    condition     = length(trimspace(var.security_group_name)) > 0
-    error_message = "security_group_name must not be empty."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.security_group_name))
+    error_message = "security_group_name must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
   }
 }
 
