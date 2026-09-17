@@ -232,13 +232,13 @@ variable "number_of_jump_servers" {
 }
 
 variable "linux_hostname_prefix" {
-  description = "Hostname prefix for Linux VSIs (e.g. 'jump' → jump01, jump02). Must contain only lowercase letters and digits; no hyphens or underscores, as a numeric suffix is appended."
+  description = "Prefix for Linux VSI hostnames. A hyphen and index are appended automatically (e.g. 'wdccom-jump-host' → wdccom-jump-host-1). Must follow IBM Cloud VPC naming rules: start with a lowercase letter, end with a letter or digit, contain only lowercase letters, digits, and hyphens."
   type        = string
-  default     = "jump"
+  default     = "wdccom-jump-host"
 
   validation {
-    condition     = can(regex("^[a-z][a-z0-9]*$", var.linux_hostname_prefix))
-    error_message = "linux_hostname_prefix must start with a lowercase letter and contain only lowercase letters and digits. Hyphens and underscores are not allowed (a numeric suffix is appended automatically)."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.linux_hostname_prefix))
+    error_message = "linux_hostname_prefix must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
   }
 }
 
@@ -281,13 +281,13 @@ variable "number_of_windows_servers" {
 }
 
 variable "windows_hostname_prefix" {
-  description = "Hostname prefix for Windows VSIs (e.g. 'win' → win01, win02). Must contain only lowercase letters and digits; no hyphens or underscores, as a numeric suffix is appended."
+  description = "Prefix for Windows VSI hostnames. A hyphen and index are appended automatically (e.g. 'wdccom-win-jh' → wdccom-win-jh-1). Must follow IBM Cloud VPC naming rules: start with a lowercase letter, end with a letter or digit, contain only lowercase letters, digits, and hyphens."
   type        = string
-  default     = "win"
+  default     = "wdccom-win-jh"
 
   validation {
-    condition     = can(regex("^[a-z][a-z0-9]*$", var.windows_hostname_prefix))
-    error_message = "windows_hostname_prefix must start with a lowercase letter and contain only lowercase letters and digits. Hyphens and underscores are not allowed (a numeric suffix is appended automatically)."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.windows_hostname_prefix))
+    error_message = "windows_hostname_prefix must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
   }
 }
 
@@ -320,6 +320,39 @@ variable "windows_start_ip_offset" {
 
 variable "windows_user_data" {
   description = "Optional PowerShell user_data script for Windows VSI initialisation (e.g. WinRM enablement)."
+  type        = string
+  default     = null
+}
+
+# ── ACTIVE DIRECTORY SERVER ───────────────────────────────────────────────────
+variable "ad_hostname_prefix" {
+  description = "Prefix for the AD server hostname. A hyphen and zero-padded index are appended (e.g. 'wdccom-ad' → wdccom-ad-01). Must follow IBM Cloud VPC naming rules."
+  type        = string
+  default     = "wdccom-ad"
+
+  validation {
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.ad_hostname_prefix))
+    error_message = "ad_hostname_prefix must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit."
+  }
+}
+
+variable "ad_start_ip_offset" {
+  description = <<-EOT
+    IP offset from the subnet base address for the AD server.
+    IBM Cloud reserves offsets 0–3. Must not overlap with Linux or Windows ranges.
+    Default: 12 (safe after Linux offsets 4–5 and Windows offsets 10–11).
+  EOT
+  type    = number
+  default = 12
+
+  validation {
+    condition     = var.ad_start_ip_offset >= 4
+    error_message = "ad_start_ip_offset must be >= 4 (offsets 0–3 are reserved by IBM Cloud)."
+  }
+}
+
+variable "ad_user_data" {
+  description = "Optional PowerShell user_data script for AD server initialisation."
   type        = string
   default     = null
 }

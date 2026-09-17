@@ -167,7 +167,42 @@ module "vsi_windows" {
   user_data           = var.windows_user_data
 }
 
-# ── 11. DNS ───────────────────────────────────────────────────────────────────
+# ── 11. VNI — AD SERVER ───────────────────────────────────────────────────────
+module "vni_ad" {
+  source = "./modules/vni"
+
+  use_vni           = var.use_vni
+  count_instances   = 1
+  name_prefix       = var.ad_hostname_prefix
+  subnet_id         = module.subnet.id
+  subnet_cidr       = module.subnet.cidr
+  start_ip_offset   = var.ad_start_ip_offset
+  security_group_id = module.security_group.id
+  resource_group_id = module.resource_group.id
+}
+
+# ── 12. AD SERVER VSI ─────────────────────────────────────────────────────────
+module "vsi_ad" {
+  source = "./modules/vsi_windows"
+
+  number_of_instances = 1
+  hostname_prefix     = var.ad_hostname_prefix
+  vpc_id              = module.vpc.id
+  zone                = var.zone
+  image_id            = var.windows_image_id
+  profile             = var.windows_profile
+  resource_group_id   = module.resource_group.id
+  ssh_key_id          = var.attach_ssh_key_to_windows ? module.ssh_key.id : null
+  subnet_id           = module.subnet.id
+  subnet_cidr         = module.subnet.cidr
+  security_group_id   = module.security_group.id
+  start_ip_offset     = var.ad_start_ip_offset
+  use_vni             = var.use_vni
+  vni_ids             = module.vni_ad.ids
+  user_data           = var.ad_user_data
+}
+
+# ── 13. DNS ───────────────────────────────────────────────────────────────────
 module "dns" {
   source = "./modules/dns"
 
@@ -181,8 +216,9 @@ module "dns" {
 
   linux_hostnames   = module.vsi_linux.hostnames
   linux_ips         = module.vsi_linux.private_ips
-  windows_hostnames = module.vsi_windows.hostnames
-  windows_ips       = module.vsi_windows.private_ips
+  # Merge jump Windows servers and AD server into a single list for DNS.
+  windows_hostnames = concat(module.vsi_windows.hostnames, module.vsi_ad.hostnames)
+  windows_ips       = concat(module.vsi_windows.private_ips, module.vsi_ad.private_ips)
 
-  depends_on = [module.vsi_linux, module.vsi_windows]
+  depends_on = [module.vsi_linux, module.vsi_windows, module.vsi_ad]
 }

@@ -52,7 +52,7 @@ use_vni = false
 # Replace linux_image_id with the actual IBM Cloud image ID for your region.
 # To list available images: ibmcloud is images --visibility public
 number_of_jump_servers = 2
-linux_hostname_prefix  = "jump"
+linux_hostname_prefix  = "wdccom-jump-host"
 linux_image_id         = "r006-REPLACE-WITH-LINUX-IMAGE-ID"
 linux_profile          = "bx2-2x8"
 
@@ -64,7 +64,7 @@ linux_start_ip_offset = 4
 # ── WINDOWS SERVERS ───────────────────────────────────────────────────────────
 # Replace windows_image_id with the actual IBM Cloud Windows image ID.
 number_of_windows_servers = 2
-windows_hostname_prefix   = "win"
+windows_hostname_prefix   = "wdccom-win-jh"
 windows_image_id          = "r006-REPLACE-WITH-WINDOWS-IMAGE-ID"
 windows_profile           = "bx2-4x16"
 
@@ -79,6 +79,12 @@ windows_start_ip_offset = 10
 #   Enable-PSRemoting -Force
 #   </powershell>
 # PS1
+
+# ── ACTIVE DIRECTORY SERVER ───────────────────────────────────────────────────
+# Single Windows VSI used as the Active Directory domain controller.
+# Hostname produced: wdccom-ad-01
+ad_hostname_prefix = "wdccom-ad"
+ad_start_ip_offset = 12
 
 # ── DNS ───────────────────────────────────────────────────────────────────────
 # Use an existing DNS Services instance and zone.

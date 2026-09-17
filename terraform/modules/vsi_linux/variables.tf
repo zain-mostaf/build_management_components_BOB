@@ -14,13 +14,13 @@ variable "number_of_instances" {
 }
 
 variable "hostname_prefix" {
-  description = "Prefix for generated hostnames (e.g. 'jump' → jump01, jump02)."
+  description = "Prefix for generated hostnames. A hyphen and index are appended (e.g. 'wdccom-jump-host' → wdccom-jump-host-1). Must follow IBM Cloud VPC naming rules: start with a lowercase letter, end with a letter or digit, hyphens allowed in the middle."
   type        = string
-  default     = "jump"
+  default     = "wdccom-jump-host"
 
   validation {
-    condition     = length(trimspace(var.hostname_prefix)) > 0
-    error_message = "hostname_prefix must not be empty."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.hostname_prefix))
+    error_message = "hostname_prefix must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit. Underscores are not allowed."
   }
 }
 

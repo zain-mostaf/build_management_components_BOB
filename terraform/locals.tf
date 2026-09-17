@@ -29,26 +29,34 @@ locals {
   # Linux hostname list
   linux_hostnames = [
     for i in range(var.number_of_jump_servers) :
-    format("%s%02d", var.linux_hostname_prefix, i + 1)
+    format("%s-%02d", var.linux_hostname_prefix, i + 1)
   ]
 
   # Windows hostname list
   windows_hostnames = [
     for i in range(var.number_of_windows_servers) :
-    format("%s%02d", var.windows_hostname_prefix, i + 1)
+    format("%s-%02d", var.windows_hostname_prefix, i + 1)
   ]
+
+  # AD server hostname (always exactly 1)
+  ad_hostnames = [format("%s-%02d", var.ad_hostname_prefix, 1)]
 
   # ── IP OVERLAP VALIDATION ─────────────────────────────────────────────────
 
   # Compute all allocated offsets for each group
   linux_offsets   = toset([for i in range(var.number_of_jump_servers) : var.linux_start_ip_offset + i])
   windows_offsets = toset([for i in range(var.number_of_windows_servers) : var.windows_start_ip_offset + i])
+  ad_offsets      = toset([var.ad_start_ip_offset])
 
   # Any offset that appears in both sets is an overlap
-  ip_overlap = setintersection(local.linux_offsets, local.windows_offsets)
+  ip_overlap = setunion(
+    setintersection(local.linux_offsets, local.windows_offsets),
+    setintersection(local.linux_offsets, local.ad_offsets),
+    setintersection(local.windows_offsets, local.ad_offsets)
+  )
 
   # ── HOSTNAME DUPLICATE CHECK ──────────────────────────────────────────────
 
-  # All hostnames across both groups (duplicates are dangerous for DNS)
-  all_hostnames = concat(local.linux_hostnames, local.windows_hostnames)
+  # All hostnames across all groups (duplicates are dangerous for DNS)
+  all_hostnames = concat(local.linux_hostnames, local.windows_hostnames, local.ad_hostnames)
 }

@@ -130,3 +130,19 @@ output "windows_dns_records" {
     "${hostname}.${var.dns_zone_name}" => module.vsi_windows.private_ips[i]
   }
 }
+
+# ── AD SERVER ─────────────────────────────────────────────────────────────────
+output "ad_vsi_id" {
+  description = "AD server VSI ID."
+  value       = module.vsi_ad.ids[0]
+}
+
+output "ad_vsi_name" {
+  description = "AD server VSI hostname."
+  value       = module.vsi_ad.names[0]
+}
+
+output "ad_vsi_private_ip" {
+  description = "AD server private IP address."
+  value       = module.vsi_ad.private_ips[0]
+}

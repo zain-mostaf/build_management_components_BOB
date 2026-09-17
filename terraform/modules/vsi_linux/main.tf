@@ -29,10 +29,10 @@ locals {
     cidrhost(var.subnet_cidr, var.start_ip_offset + i)
   ]
 
-  # Unique hostnames: <prefix><zero-padded-index>  e.g. jump01, jump02
+  # Unique hostnames: <prefix>-<zero-padded-index>  e.g. wdccom-jump-host-01, wdccom-jump-host-02
   hostnames = [
     for i in range(var.number_of_instances) :
-    format("%s%02d", var.hostname_prefix, i + 1)
+    format("%s-%02d", var.hostname_prefix, i + 1)
   ]
 }
 
