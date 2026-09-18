@@ -115,6 +115,10 @@ resource "ibm_dns_resource_record" "linux_ptr" {
   name        = local.linux_ptr_names[count.index]
   rdata       = "${var.linux_hostnames[count.index]}.${var.dns_zone_name}"
   ttl         = var.dns_ttl
+
+  # IBM Cloud DNS requires the forward A record for the target hostname to
+  # exist in the zone before a PTR record referencing it can be created.
+  depends_on = [ibm_dns_resource_record.linux_a]
 }
 
 resource "ibm_dns_resource_record" "windows_ptr" {
@@ -125,4 +129,8 @@ resource "ibm_dns_resource_record" "windows_ptr" {
   name        = local.windows_ptr_names[count.index]
   rdata       = "${var.windows_hostnames[count.index]}.${var.dns_zone_name}"
   ttl         = var.dns_ttl
+
+  # IBM Cloud DNS requires the forward A record for the target hostname to
+  # exist in the zone before a PTR record referencing it can be created.
+  depends_on = [ibm_dns_resource_record.windows_a]
 }
