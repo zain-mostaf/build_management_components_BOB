@@ -12,7 +12,7 @@ variable "ibmcloud_api_key" {
 variable "region" {
   description = "IBM Cloud region (e.g. us-south, eu-de)."
   type        = string
-  default     = "us-south"
+  default     = "us-east"
 }
 
 variable "tags" {
@@ -48,6 +48,7 @@ variable "create_vpc" {
 variable "vpc_name" {
   description = "Name of the VPC to create or use."
   type        = string
+  default     = "wdccom-vpc-common"
 
   validation {
     condition     = length(trimspace(var.vpc_name)) > 0
@@ -65,7 +66,7 @@ variable "create_address_prefix" {
 variable "address_prefix_name" {
   description = "Name of the address prefix to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
-  default     = "prefix-01"
+  default     = "wdccom-vpc-common-prefix-1"
 
   validation {
     condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.address_prefix_name))
@@ -89,6 +90,7 @@ variable "create_subnet" {
 variable "subnet_name" {
   description = "Name of the subnet to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
+  default     = "wdccom-vpc-common-subnet-1"
 
   validation {
     condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.subnet_name))
@@ -105,19 +107,20 @@ variable "subnet_cidr" {
 variable "zone" {
   description = "IBM Cloud zone (e.g. us-south-1)."
   type        = string
-  default     = "us-south-1"
+  default     = "us-east-1"
 }
 
 # ── SECURITY GROUP ────────────────────────────────────────────────────────────
 variable "create_security_group" {
   description = "When true, create a new Security Group. When false, look up by name."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "security_group_name" {
   description = "Name of the Security Group to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
+  default     = "wdccom-management-sg"
 
   validation {
     condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.security_group_name))
@@ -140,16 +143,7 @@ variable "security_group_rules" {
     {
       direction = "inbound"
       remote    = "0.0.0.0/0"
-      protocol  = "tcp"
-      port_min  = 22
-      port_max  = 22
-    },
-    {
-      direction = "inbound"
-      remote    = "0.0.0.0/0"
-      protocol  = "icmp"
-      icmp_type = 8
-      icmp_code = 0
+      protocol  = "all"
     },
     {
       direction = "outbound"
@@ -163,12 +157,13 @@ variable "security_group_rules" {
 variable "create_ssh_key" {
   description = "When true, create a new SSH key. When false, look up by name."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "ssh_key_name" {
   description = "Name of the SSH key to create or use."
   type        = string
+  default     = "wdccom-internal-key"
 
   validation {
     condition     = length(trimspace(var.ssh_key_name)) > 0
@@ -216,14 +211,14 @@ variable "attach_ssh_key_to_windows" {
 variable "use_vni" {
   description = "When true, create Virtual Network Interfaces. When false, use inline primary_network_interface."
   type        = bool
-  default     = false
+  default     = true
 }
 
 # ── LINUX VSI ─────────────────────────────────────────────────────────────────
 variable "number_of_jump_servers" {
   description = "Number of Linux Jump Server VSIs to create."
   type        = number
-  default     = 2
+  default     = 1
 
   validation {
     condition     = var.number_of_jump_servers >= 0
@@ -250,7 +245,7 @@ variable "linux_image_id" {
 variable "linux_profile" {
   description = "VSI profile for Linux instances (e.g. bx2-2x8)."
   type        = string
-  default     = "bx2-2x8"
+  default     = "cx2-32x64"
 }
 
 variable "linux_start_ip_offset" {
@@ -272,7 +267,7 @@ variable "linux_start_ip_offset" {
 variable "number_of_windows_servers" {
   description = "Number of Windows VSIs to create."
   type        = number
-  default     = 2
+  default     = 1
 
   validation {
     condition     = var.number_of_windows_servers >= 0
@@ -299,7 +294,7 @@ variable "windows_image_id" {
 variable "windows_profile" {
   description = "VSI profile for Windows instances (e.g. bx2-4x16)."
   type        = string
-  default     = "bx2-4x16"
+  default     = "bx2-2x8"
 }
 
 variable "windows_start_ip_offset" {
@@ -310,7 +305,7 @@ variable "windows_start_ip_offset" {
     Example: offset 10, 2 servers → 10.136.64.10, 10.136.64.11
   EOT
   type    = number
-  default = 10
+  default = 7
 
   validation {
     condition     = var.windows_start_ip_offset >= 4
@@ -343,7 +338,7 @@ variable "ad_start_ip_offset" {
     Default: 12 (safe after Linux offsets 4–5 and Windows offsets 10–11).
   EOT
   type    = number
-  default = 12
+  default = 10
 
   validation {
     condition     = var.ad_start_ip_offset >= 4
@@ -361,7 +356,7 @@ variable "ad_user_data" {
 variable "create_dns_instance" {
   description = "When true, create a new IBM Cloud DNS Services instance. When false, look up by name."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "dns_instance_name" {
@@ -377,7 +372,7 @@ variable "dns_instance_name" {
 variable "create_dns_zone" {
   description = "When true, create a new DNS zone. When false, look up by name."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "dns_zone_name" {
@@ -393,5 +388,5 @@ variable "dns_zone_name" {
 variable "dns_ttl" {
   description = "TTL in seconds for DNS records."
   type        = number
-  default     = 300
+  default     = 43200
 }
