@@ -40,7 +40,7 @@ security_group_name   = "management-sg"
 # ── SSH KEY ───────────────────────────────────────────────────────────────────
 # Use an existing SSH key — must be RSA because it is also used on Windows.
 create_ssh_key            = false
-ssh_key_name              = "hpc-admin-key"
+ssh_key_name              = ""
 ssh_key_type              = "rsa"
 attach_ssh_key_to_windows = true
 
@@ -65,7 +65,7 @@ linux_start_ip_offset = 4
 # Replace windows_image_id with the actual IBM Cloud Windows image ID.
 number_of_windows_servers = 2
 windows_hostname_prefix   = "wdccom-win-jh"
-windows_image_id          = "r006-REPLACE-WITH-WINDOWS-IMAGE-ID"
+windows_image_id          = ""
 windows_profile           = "bx2-4x16"
 
 # Windows VSIs will receive:
