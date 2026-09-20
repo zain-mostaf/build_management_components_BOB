@@ -255,7 +255,7 @@ variable "linux_start_ip_offset" {
     Example: subnet 10.136.64.0/22, offset 4 → first Linux IP = 10.136.64.4
   EOT
   type    = number
-  default = 4
+  default = 5
 
   validation {
     condition     = var.linux_start_ip_offset >= 4
