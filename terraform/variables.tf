@@ -66,7 +66,7 @@ variable "create_address_prefix" {
 variable "address_prefix_name" {
   description = "Name of the address prefix to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
-  default     = "wdccom-vpc-common-prefix-1"
+  default     = "wdccom-vpc-common-prefix"
 
   validation {
     condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.address_prefix_name))
@@ -90,7 +90,7 @@ variable "create_subnet" {
 variable "subnet_name" {
   description = "Name of the subnet to create or use. Must match IBM Cloud VPC naming rules: lowercase letters, digits, and hyphens only; must start with a letter and end with a letter or digit."
   type        = string
-  default     = "wdccom-vpc-common-subnet-1"
+  default     = "wdccom-vpc-common-subnet"
 
   validation {
     condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.subnet_name))
