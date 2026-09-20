@@ -113,7 +113,10 @@ resource "ibm_dns_resource_record" "linux_ptr" {
   zone_id     = local.dns_zone_id
   type        = "PTR"
   name        = local.linux_ptr_names[count.index]
-  rdata       = "${var.linux_hostnames[count.index]}.${var.dns_zone_name}"
+  # rdata must match the short hostname used in the A record name field,
+  # not the FQDN. IBM Cloud DNS resolves the target against existing A records
+  # in the zone by their registered name (without the zone suffix appended).
+  rdata       = var.linux_hostnames[count.index]
   ttl         = var.dns_ttl
 
   # IBM Cloud DNS requires the forward A record for the target hostname to
@@ -127,7 +130,10 @@ resource "ibm_dns_resource_record" "windows_ptr" {
   zone_id     = local.dns_zone_id
   type        = "PTR"
   name        = local.windows_ptr_names[count.index]
-  rdata       = "${var.windows_hostnames[count.index]}.${var.dns_zone_name}"
+  # rdata must match the short hostname used in the A record name field,
+  # not the FQDN. IBM Cloud DNS resolves the target against existing A records
+  # in the zone by their registered name (without the zone suffix appended).
+  rdata       = var.windows_hostnames[count.index]
   ttl         = var.dns_ttl
 
   # IBM Cloud DNS requires the forward A record for the target hostname to
