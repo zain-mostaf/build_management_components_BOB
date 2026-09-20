@@ -59,7 +59,7 @@ linux_profile          = "bx2-2x8"
 # Linux VSIs will receive:
 #   10.x.x.4  (offset 4)
 #   10.x.x.5  (offset 5)
-linux_start_ip_offset = 4
+linux_start_ip_offset = 5
 
 # ── WINDOWS SERVERS ───────────────────────────────────────────────────────────
 # Replace windows_image_id with the actual IBM Cloud Windows image ID.
