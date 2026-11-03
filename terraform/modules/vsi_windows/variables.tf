@@ -24,6 +24,13 @@ variable "hostname_prefix" {
   }
 }
 
+
+variable "hostname_digits" {
+  description = "Minimum number of digits in hostname suffix"
+  type        = number
+  default     = 2
+}
+
 variable "vpc_id" {
   description = "VPC ID for the VSI."
   type        = string
