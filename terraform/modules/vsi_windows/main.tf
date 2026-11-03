@@ -23,10 +23,11 @@ locals {
   ]
 
   # Unique hostnames: <prefix>-<zero-padded-index>  e.g. wdccom-win-jh-01, wdccom-win-jh-02
-hostnames = [
-  for i in range(var.number_of_instances) :
-  format("%s-%d", var.hostname_prefix, i + 1)
-]
+  hostnames = [
+    for i in range(var.number_of_instances) :
+    format("%s-%d", var.hostname_prefix, i + 1)
+  ]
+}
 
 # ── VSI ───────────────────────────────────────────────────────────────────────
 resource "ibm_is_instance" "this" {
