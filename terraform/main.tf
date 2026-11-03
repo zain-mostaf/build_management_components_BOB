@@ -151,6 +151,7 @@ module "vsi_windows" {
 
   number_of_instances = var.number_of_windows_servers
   hostname_prefix     = var.windows_hostname_prefix
+  hostname_digits     = 1
   vpc_id              = module.vpc.id
   zone                = var.zone
   image_id            = var.windows_image_id
@@ -187,6 +188,7 @@ module "vsi_ad" {
 
   number_of_instances = 1
   hostname_prefix     = var.ad_hostname_prefix
+  hostname_digits     = 2
   vpc_id              = module.vpc.id
   zone                = var.zone
   image_id            = var.windows_image_id
