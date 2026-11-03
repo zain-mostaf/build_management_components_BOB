@@ -24,6 +24,12 @@ variable "hostname_prefix" {
   }
 }
 
+variable "pad_hostname_index" {
+  description = "Whether to zero-pad the hostname index to two digits (01, 02)."
+  type        = bool
+  default     = true
+}
+
 variable "vpc_id" {
   description = "VPC ID for the VSI."
   type        = string

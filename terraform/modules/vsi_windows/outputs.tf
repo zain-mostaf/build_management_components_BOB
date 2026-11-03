@@ -18,6 +18,6 @@ output "private_ips" {
 }
 
 output "hostnames" {
-  description = "Generated hostnames in order (e.g. ['win01', 'win02'])."
+  description = "Generated hostnames in order, using the configured index padding."
   value       = local.hostnames
 }
