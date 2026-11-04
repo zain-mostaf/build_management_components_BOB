@@ -91,32 +91,16 @@ resource "ibm_dns_resource_record" "windows_a" {
 }
 
 # ── PTR RECORDS ───────────────────────────────────────────────────────────────
-# PTR name format expected by IBM Cloud DNS:
-#   Reverse the IP octets and append ".in-addr.arpa"
-#   e.g. 10.136.64.4 → 4.64.136.10.in-addr.arpa
-
-locals {
-  linux_ptr_names = [
-    for ip in var.linux_ips :
-    join(".", reverse(split(".", ip)))
-  ]
-
-  windows_ptr_names = [
-    for ip in var.windows_ips :
-    join(".", reverse(split(".", ip)))
-  ]
-}
+# IBM Cloud DNS expects the original IP address as the PTR name and the
+# fully qualified hostname as rdata (e.g. 10.136.64.4 -> jump01.example.internal).
 
 resource "ibm_dns_resource_record" "linux_ptr" {
   count       = length(var.linux_hostnames)
   instance_id = local.dns_instance_guid
   zone_id     = local.dns_zone_id
   type        = "PTR"
-  name        = local.linux_ptr_names[count.index]
-  # rdata must match the short hostname used in the A record name field,
-  # not the FQDN. IBM Cloud DNS resolves the target against existing A records
-  # in the zone by their registered name (without the zone suffix appended).
-  rdata       = var.linux_hostnames[count.index]
+  name        = var.linux_ips[count.index]
+  rdata       = "${var.linux_hostnames[count.index]}.${local.dns_zone_name}"
   ttl         = var.dns_ttl
 
   # IBM Cloud DNS requires the forward A record for the target hostname to
@@ -129,11 +113,8 @@ resource "ibm_dns_resource_record" "windows_ptr" {
   instance_id = local.dns_instance_guid
   zone_id     = local.dns_zone_id
   type        = "PTR"
-  name        = local.windows_ptr_names[count.index]
-  # rdata must match the short hostname used in the A record name field,
-  # not the FQDN. IBM Cloud DNS resolves the target against existing A records
-  # in the zone by their registered name (without the zone suffix appended).
-  rdata       = var.windows_hostnames[count.index]
+  name        = var.windows_ips[count.index]
+  rdata       = "${var.windows_hostnames[count.index]}.${local.dns_zone_name}"
   ttl         = var.dns_ttl
 
   # IBM Cloud DNS requires the forward A record for the target hostname to
