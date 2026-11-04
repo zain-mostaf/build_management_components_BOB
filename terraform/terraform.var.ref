@@ -63,7 +63,7 @@ linux_start_ip_offset = 5
 
 # ── WINDOWS SERVERS ───────────────────────────────────────────────────────────
 # Replace windows_image_id with the actual IBM Cloud Windows image ID.
-number_of_windows_servers = 2
+number_of_windows_jump_servers = 2
 windows_hostname_prefix   = "wdccom-win-jh"
 windows_image_id          = ""
 windows_profile           = "bx2-4x16"
@@ -82,7 +82,8 @@ windows_start_ip_offset = 10
 
 # ── ACTIVE DIRECTORY SERVER ───────────────────────────────────────────────────
 # Single Windows VSI used as the Active Directory domain controller.
-# Hostname produced: wdccom-ad-01
+number_of_windows_AD_servers = 1
+# Hostnames produced: wdccom-ad-01, wdccom-ad-02, ...
 ad_hostname_prefix = "wdccom-ad"
 ad_start_ip_offset = 12
 

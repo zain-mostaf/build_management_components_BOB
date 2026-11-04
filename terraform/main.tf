@@ -20,14 +20,14 @@
 check "ip_range_no_overlap" {
   assert {
     condition     = length(local.ip_overlap) == 0
-    error_message = "Linux and Windows IP ranges overlap at subnet offsets: ${join(", ", local.ip_overlap)}. Adjust linux_start_ip_offset or windows_start_ip_offset."
+    error_message = "Linux, Windows jump, and AD server IP ranges overlap at subnet offsets: ${join(", ", local.ip_overlap)}. Adjust linux_start_ip_offset, windows_start_ip_offset, or ad_start_ip_offset."
   }
 }
 
 check "no_duplicate_hostnames" {
   assert {
     condition     = length(local.all_hostnames) == length(toset(local.all_hostnames))
-    error_message = "Duplicate hostnames detected. Change linux_hostname_prefix or windows_hostname_prefix to avoid DNS collisions."
+    error_message = "Duplicate hostnames detected. Change linux_hostname_prefix, windows_hostname_prefix, or ad_hostname_prefix to avoid DNS collisions."
   }
 }
 
@@ -115,7 +115,7 @@ module "vni_windows" {
   source = "./modules/vni"
 
   use_vni           = var.use_vni
-  count_instances   = var.number_of_windows_servers
+  count_instances   = var.number_of_windows_jump_servers
   name_prefix       = var.windows_hostname_prefix
   subnet_id         = module.subnet.id
   subnet_cidr       = module.subnet.cidr
@@ -149,7 +149,7 @@ module "vsi_linux" {
 module "vsi_windows" {
   source = "./modules/vsi_windows"
 
-  number_of_instances = var.number_of_windows_servers
+  number_of_instances = var.number_of_windows_jump_servers
   hostname_prefix     = var.windows_hostname_prefix
   pad_hostname_index  = false
   vpc_id              = module.vpc.id
@@ -173,7 +173,7 @@ module "vni_ad" {
   source = "./modules/vni"
 
   use_vni           = var.use_vni
-  count_instances   = 1
+  count_instances   = var.number_of_windows_AD_servers
   name_prefix       = var.ad_hostname_prefix
   subnet_id         = module.subnet.id
   subnet_cidr       = module.subnet.cidr
@@ -186,7 +186,7 @@ module "vni_ad" {
 module "vsi_ad" {
   source = "./modules/vsi_windows"
 
-  number_of_instances = 1
+  number_of_instances = var.number_of_windows_AD_servers
   hostname_prefix     = var.ad_hostname_prefix
   vpc_id              = module.vpc.id
   zone                = var.zone

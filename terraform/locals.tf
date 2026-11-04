@@ -22,7 +22,7 @@ locals {
 
   # Pre-compute every Windows private IP
   windows_private_ips = [
-    for i in range(var.number_of_windows_servers) :
+    for i in range(var.number_of_windows_jump_servers) :
     cidrhost(module.subnet.cidr, var.windows_start_ip_offset + i)
   ]
 
@@ -34,19 +34,22 @@ locals {
 
   # Windows hostname list
   windows_hostnames = [
-    for i in range(var.number_of_windows_servers) :
-    format("%s-%02d", var.windows_hostname_prefix, i + 1)
+    for i in range(var.number_of_windows_jump_servers) :
+    format("%s-%d", var.windows_hostname_prefix, i + 1)
   ]
 
-  # AD server hostname (always exactly 1)
-  ad_hostnames = [format("%s-%02d", var.ad_hostname_prefix, 1)]
+  # AD server hostname list
+  ad_hostnames = [
+    for i in range(var.number_of_windows_AD_servers) :
+    format("%s-%02d", var.ad_hostname_prefix, i + 1)
+  ]
 
   # ── IP OVERLAP VALIDATION ─────────────────────────────────────────────────
 
   # Compute all allocated offsets for each group
   linux_offsets   = toset([for i in range(var.number_of_jump_servers) : var.linux_start_ip_offset + i])
-  windows_offsets = toset([for i in range(var.number_of_windows_servers) : var.windows_start_ip_offset + i])
-  ad_offsets      = toset([var.ad_start_ip_offset])
+  windows_offsets = toset([for i in range(var.number_of_windows_jump_servers) : var.windows_start_ip_offset + i])
+  ad_offsets      = toset([for i in range(var.number_of_windows_AD_servers) : var.ad_start_ip_offset + i])
 
   # Any offset that appears in both sets is an overlap
   ip_overlap = setunion(

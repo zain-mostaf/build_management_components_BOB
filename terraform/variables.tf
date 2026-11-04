@@ -264,14 +264,14 @@ variable "linux_start_ip_offset" {
 }
 
 # ── WINDOWS VSI ───────────────────────────────────────────────────────────────
-variable "number_of_windows_servers" {
-  description = "Number of Windows VSIs to create."
+variable "number_of_windows_jump_servers" {
+  description = "Number of Windows jump server VSIs to create."
   type        = number
   default     = 1
 
   validation {
-    condition     = var.number_of_windows_servers >= 0
-    error_message = "number_of_windows_servers must be >= 0."
+    condition     = var.number_of_windows_jump_servers >= 0 && floor(var.number_of_windows_jump_servers) == var.number_of_windows_jump_servers
+    error_message = "number_of_windows_jump_servers must be a non-negative integer."
   }
 }
 
@@ -328,6 +328,17 @@ variable "ad_hostname_prefix" {
   validation {
     condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.ad_hostname_prefix))
     error_message = "ad_hostname_prefix must start with a lowercase letter, contain only lowercase letters, digits, and hyphens, and end with a letter or digit."
+  }
+}
+
+variable "number_of_windows_AD_servers" {
+  description = "Number of Windows AD VSIs to create."
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.number_of_windows_AD_servers >= 0 && floor(var.number_of_windows_AD_servers) == var.number_of_windows_AD_servers
+    error_message = "number_of_windows_AD_servers must be a non-negative integer."
   }
 }
 
