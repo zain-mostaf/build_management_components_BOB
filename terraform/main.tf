@@ -151,7 +151,6 @@ module "vsi_windows" {
 
   number_of_instances = var.number_of_windows_jump_servers
   hostname_prefix     = var.windows_hostname_prefix
-  pad_hostname_index  = false
   vpc_id              = module.vpc.id
   zone                = var.zone
   image_id            = var.windows_image_id
